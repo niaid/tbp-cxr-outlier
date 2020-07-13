@@ -13,3 +13,7 @@ except ImportError:
 except PackageNotFoundError:
     # package is not installed
     pass
+
+
+
+__author__ = ["Bradley Lowekamp"]
