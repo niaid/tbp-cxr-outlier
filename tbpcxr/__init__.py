@@ -1,3 +1,4 @@
+import pkg_resources as res
 
 try:
     from importlib.metadata import version, PackageNotFoundError
@@ -13,6 +14,9 @@ except ImportError:
 except PackageNotFoundError:
     # package is not installed
     pass
+
+
+model_list = res.resource_listdir(__name__, "model")
 
 
 
