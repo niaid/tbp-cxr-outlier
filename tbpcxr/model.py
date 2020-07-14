@@ -1,4 +1,4 @@
-
+import pkg_resources as res
 
 from sklearn import decomposition
 import SimpleITK as sitk
@@ -8,6 +8,8 @@ import numpy as np
 
 from sklearn.covariance import MinCovDet
 from sklearn.covariance import EllipticEnvelope
+
+import pickle
 
 from . import registration
 
@@ -68,10 +70,10 @@ class PCAModel:
 
     def outlier_predictor(self, arr):
 
-        res = self.residuals(arr)
+        residuals = self.residuals(arr)
         dist = self.robust_distance(arr)
 
-        X = np.stack((res, dist), axis=-1)
+        X = np.stack((residuals, dist), axis=-1)
         return self.outlier_detector.predict(X)
 
     def residual_images(self, arr):
@@ -115,3 +117,10 @@ class PCAModel:
     def _images_to_arr(self, imgs):
 
         return np.stack([sitk.GetArrayFromImage(sitk.Crop(img, [self.CROP_SIZE]*2, [self.CROP_SIZE]*2)).ravel() for img in imgs])
+
+    @staticmethod
+    def load_outlier_pcamodel():
+        """Return a pre-trained PCAModel class to detect outliers or abnormal CXR images."""
+        data = res.resource_string(__name__, "model/pca-001.pkl")
+        return pickle.loads(data)
+

@@ -1,5 +1,5 @@
 #
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open("README.rst", 'r') as fp:
     long_description = fp.read()
@@ -20,13 +20,9 @@ setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/niaid",
-    packages=find_packages(exclude=("test",)),
+    packages=['tbpcxr'],
+    package_data={'tbpcxr': ['model/*.pkl']},
     license='Apache 2.0',
-    entry_points={
-          'console_scripts': [
-              'sitkibex = sitkibex.cli:cli'
-          ]
-      },
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Programming Language :: Python :: 3",
