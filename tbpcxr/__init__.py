@@ -19,5 +19,4 @@ except PackageNotFoundError:
 model_list = res.resource_listdir(__name__, "model")
 
 
-
 __author__ = ["Bradley Lowekamp"]
