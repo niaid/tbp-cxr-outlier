@@ -30,8 +30,8 @@ jobs:
       with:
         path: .git/lfs
         key: lfs-v1-${{ hashFiles('.lfs-assets-id') }}
-        restore-keys: |
-          - lfs-v1-
+        restore-keys:
+          lfs-v1-
     - name: Git LFS Pull
       run: |
         git lfs pull
@@ -82,7 +82,7 @@ jobs:
           path: .git/lfs
           key: lfs-v1-${{ hashFiles('.lfs-assets-id') }}
           restore-keys: |
-            - lfs-v1-
+            lfs-v1-
       - name: Git LFS Pull
         run: |
           git lfs pull
