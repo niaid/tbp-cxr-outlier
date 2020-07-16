@@ -10,9 +10,11 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-sys.path.insert(0, os.path.abspath('..'))
+
+# To get teh correct version out package needs to be installed from the source
+# directory in development or editable mode.
+#sys.path.insert(0, os.path.abspath('..'))
+
 
 
 # -- Project information -----------------------------------------------------
@@ -33,6 +35,7 @@ author = 'Bradley Lowekamp'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx_click.ext',
+    'sphinx_autodoc_typehints',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
