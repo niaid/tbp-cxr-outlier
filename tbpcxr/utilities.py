@@ -2,11 +2,12 @@ import SimpleITK as sitk
 import numpy as np
 
 
-def read_dcm(filename: str):
+def read_dcm(filename: str) -> sitk.Image:
     """
     Read an x-ray DICOM file with the GDCMImageIO, reducing it to 2D from 3D as needed.
 
     If the file cannot be read by the GDCM library then an exception is thrown.
+
     :param filename: A DICOM filename
     :return: a 2D SimpleITK Image
     """

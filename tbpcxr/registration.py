@@ -1,8 +1,22 @@
 import SimpleITK as sitk
-from typing import Iterable
+from typing import Iterable, Tuple
 
 
-def cxr_affine(fixed, moving, verbose=0):
+def cxr_affine(fixed: sitk.Image,
+               moving: sitk.Image,
+               verbose: int = 0)\
+        -> Tuple[sitk.Transform, float]:
+    """
+    Perform affine registration between two CXR images. First a 2D similarity transform is optimized
+    then an affine transform.
+
+    :param fixed: The fixed image, sample points are mapped from the fixed image to the moving
+    :param moving: The moving image.
+    :param verbose: 0 - no output, 1 - staged registration results, 2 - output each interation
+    :return: Returns tuple of the optimized affine transform mapping points from the fixed image to the moving image,
+        and the final optimized metric value.
+    """
+
     def command_iteration(method):
         print("{0:3} = {1:7.5f} : {2} #{3}".format(method.GetOptimizerIteration(),
                                                    method.GetMetricValue(),
@@ -79,6 +93,14 @@ def resample(fixed: sitk.Image,
 def avg_resample(fixed: sitk.Image,
                  images: Iterable[sitk.Image]) \
         -> sitk.Image:
+    """
+    Resamples all images onto the fixed image's a coordinate frame, ignoring the fixed image's values. The resampled
+    images are accumulated and averaged for the results.
+
+    :param fixed:
+    :param images:
+    :return:
+    """
 
     avg = sitk.Cast(fixed, sitk.sitkFloat32)*0.0
     for img in images:
@@ -93,9 +115,15 @@ def build_atlas(fixed: sitk.Image,
                 fixed_crop_percent=0.10,
                 verbose=0) \
         -> sitk.Image:
-    """ Builds an CXR atlas ( average ) by repeatedly registering a list of images to an average, then updating the
-     average.
-      """
+    """
+    Builds an CXR atlas ( average ) by repeatedly registering a list of images to an average, then updating the average.
+
+    :param fixed:
+    :param images:
+    :param fixed_crop_percent:
+    :param verbose:
+    :return:
+    """
 
     avg = avg_resample(fixed, images)
 
