@@ -5,15 +5,22 @@ Welcome to tbpcxr's documentation!
 
 .. include:: ../README.rst
 
-Command Line Interface Reference
---------------------------------
 
-Documentation for command line usage of the Python module.
+Example
+-------
 
-.. toctree::
-   :maxdepth: 2
+.. code-block:: python
 
-   commandline
+ img = sitk.ReadImage(path_to_file, sitk.sitkFloat32)
+
+ nimg = normalize_img(img)
+
+ rimg = outlier_pcamodel.register_to_atlas_and_resample(nimg, verbose=0)
+ arr = outlier_pcamodel._images_to_arr([rimg])
+
+ if outlier_pcamodel.outlier_predictor(arr)[0] == -1:
+    print("{} is an outlier".format(path_to_file))
+
 
 
 API Reference
@@ -25,6 +32,17 @@ Documentation for directly using the Python functions.
    :maxdepth: 2
 
    api
+
+
+Command Line Interface Reference
+--------------------------------
+
+Documentation for command line usage of the Python module.
+
+.. toctree::
+   :maxdepth: 2
+
+   commandline
 
 
 Development
