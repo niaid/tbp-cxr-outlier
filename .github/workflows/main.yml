@@ -126,7 +126,6 @@ jobs:
           ./utils/update-gh-pages.sh docs/_build/html
 
           repo_uri="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git log ${TARGET_BRANCH}
           git push $repo_uri ${TARGET_BRANCH}
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
