@@ -15,14 +15,10 @@
 #  limitations under the License.
 #
 
-# This script takes a path as an argument to create a commit on the "gh-pages" branch which sets the branch to match
-# the contents for the provided path.
-
-# TODO: add .nojeckll and remove .buildinfo files
-
+# This script takes a path as an argument to create a commit on the ENV:TARGET_BRANCH or "gh-pages" branch which sets
+# the branch to match the contents for the provided path.
 
 set -eu
-set -x
 
 target_branch=${TARGET_BRANCH:-"gh-pages"}
 
@@ -38,6 +34,12 @@ die()
 {
   echo "Error: $@" 1>&2
   exit 1
+}
+
+
+usage()
+{
+  die "Usage: $0 path_to_branch"
 }
 
 
