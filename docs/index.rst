@@ -11,7 +11,12 @@ Example
 
 .. code-block:: python
 
- img = sitk.ReadImage(path_to_file, sitk.sitkFloat32)
+ from tbpcxr.model import PCAModel
+ from tbpcxr.utilities import normalize_img, read_dcm
+
+ outlier_pcamodel = PCAModel.load_outlier_pcamodel()
+
+ img = read_dcm(path_to_file)
 
  nimg = normalize_img(img)
 
@@ -20,7 +25,6 @@ Example
 
  if outlier_pcamodel.outlier_predictor(arr)[0] == -1:
     print("{} is an outlier".format(path_to_file))
-
 
 
 API Reference
