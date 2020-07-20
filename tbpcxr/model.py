@@ -20,10 +20,10 @@ class PCAModel:
     outlier.
 
     Four states of the image data need to be defined:
-    * normalized image: An sitk.Image which has been registered to the :attr:`image_atlas`, resampled onto the space
-    of the :attr:`image_ref` then the intensities normalized.
-    * observation vector : A normalized image converted into an array ( np.ndarray ).
-    * feature vector: A representation of an image that has been converted into an observation then further reduced.
+     * normalized image: An sitk.Image which has been registered to the :attr:`image_atlas`, resampled onto the space
+       of the :attr:`image_ref` then the intensities normalized.
+     * observation vector : A normalized image converted into an array ( np.ndarray ).
+     * feature vector: A representation of an image that has been converted into an observation then further reduced.
 
     """
 
