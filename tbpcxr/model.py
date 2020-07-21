@@ -1,4 +1,5 @@
 import pkg_resources as res
+import os
 
 from sklearn import decomposition
 import SimpleITK as sitk
@@ -6,35 +7,150 @@ from typing import List
 
 import numpy as np
 
+from abc import ABC, abstractmethod
+
 from sklearn.covariance import MinCovDet
 from sklearn.covariance import EllipticEnvelope
 
 import pickle
 
 from . import registration
+from . import utilities
 
 
-class PCAModel:
+class Model(ABC):
     """
-    This class represents a model of an expected image to detect if another image conforms to the model or is an
-    outlier.
+    This class is a base class for models of image representations.
+
+    The images are registered to an atlas and resampled onto a reference image to make each image a comparable
+    observation vector.
 
     Four states of the image data need to be defined:
      * normalized image: An sitk.Image which has been registered to the :attr:`image_atlas`, resampled onto the space
-       of the :attr:`image_ref` then the intensities normalized.
+       of the :attr:`image_reference` then the intensities normalized.
      * observation vector : A normalized image converted into an array ( np.ndarray ).
      * feature vector: A representation of an image that has been converted into an observation then further reduced.
 
     """
 
-    SAMPLE_IMAGE_SIZE = 64
-    """The reference image is defined as this number of pixels in each dimension."""
+    def __init__(self, reference_size=64, reference_crop=6):
 
-    CROP_SIZE = 6
-    """The reference image, image atlas, and input images are cropped by this amount on each edge for registration, and
-    the PCA feature vector."""
+        # check for sanity of remaining image
+        assert reference_size > reference_crop * 2
 
-    def __init__(self):
+        self.reference_crop = reference_crop
+        """The reference image, image atlas, and input images are cropped by this amount on each edge for registration, and
+        the PCA feature vector."""
+
+        self.image_atlas = None
+        """The atlas image which input images are registered too.
+
+        This image must have the same physical extent as image_reference
+
+        :type: sitk.Image or None
+        """
+
+        dim = 2
+        self.image_reference = sitk.Image([reference_size] * dim, sitk.sitkUInt8)
+        self.image_reference.SetOrigin([-0.5 + (0.5 / reference_size)] * dim)
+        self.image_reference.SetSpacing([1.0 / reference_size] * dim)
+
+    @abstractmethod
+    def compute(self, observation_arr: np.ndarray, **kwargs) -> None:
+        raise NotImplemented
+
+    @property
+    def reference_size(self):
+        """The reference image is defined as this number of pixels in each dimension."""
+        return self.image_reference.GetSize()[0]
+
+    def to_observations(self, images: List[sitk.Image], verbose: int = 0) -> np.ndarray:
+
+        img_list = []
+        for img in images:
+            img = utilities.normalize_img(img, self.reference_size)
+
+            img_list.append(self.register_to_atlas_and_resample(img, verbose=verbose))
+
+        return self._images_to_arr(img_list)
+
+    def register_to_atlas_and_resample(self, image: sitk.Image, verbose: int = 0) \
+            -> sitk.Image:
+        """
+        Register to the input images to the atlas image, and resample to the reference image coordinates.
+
+        :param image:
+        :param verbose:
+        :return: The registered and resampled image.
+        """
+
+        fixed_crop = self.image_atlas_cropped
+
+        try:
+            transform, metric_value = registration.cxr_affine(fixed_crop, moving=image, verbose=verbose)
+        except RuntimeError as e:
+            print("Registration Error:")
+            print(e)
+            transform = sitk.TranslationTransform(2)
+
+        return sitk.Resample(image,
+                             referenceImage=self.image_reference,
+                             transform=transform,
+                             outputPixelType=sitk.sitkFloat32)
+
+    @property
+    def image_atlas_cropped(self):
+        crop_size = [int(s * self.reference_crop / self.reference_size) for s in self.image_atlas.GetSize()]
+        return sitk.Crop(self.image_atlas, crop_size, crop_size)
+
+    def _arr_to_images(self, observation_arr: np.ndarray) -> List[sitk.Image]:
+        """
+
+        :param observation_arr:
+        :return:
+        """
+        size = self.reference_size - 2 * self.reference_crop
+        if len(observation_arr) == size**2:
+            return sitk.GetImageFromArray(observation_arr.reshape(size, size))
+
+        return [sitk.GetImageFromArray(arr.reshape(size, size))
+                for arr in observation_arr]
+
+    def _images_to_arr(self, imgs: List[sitk.Image]) -> np.ndarray:
+        crop_size = [self.reference_crop] * 2
+        return np.stack([sitk.GetArrayFromImage(sitk.Crop(img, crop_size, crop_size)).ravel() for img in imgs])
+
+    @staticmethod
+    def load_outlier_pcamodel() -> 'Model':
+        """
+        :return: A pre-trained PCAModel object to detect outliers or abnormal CXR images.
+        """
+        return __class__.load_model("pca-001.pkl")
+
+    @staticmethod
+    def load_model(name: str) -> 'Model':
+        """
+
+        :param name:
+        :return:
+        """
+
+        data = res.resource_string(__name__, os.path.join("model", name))
+        return pickle.loads(data)
+
+
+class PCAModel(Model):
+    """
+    The PCAModel uses Principle Components Analyst to represent a feature space of images.
+
+    This class represents a model of an expected image to detect if another image conforms to the model or is an
+    outlier.
+    """
+
+    def __init__(self, reference_size=64, reference_crop=6):
+
+        super().__init__(reference_size, reference_crop)
+
         self.pca = None
         """The PCA decomposition of the cropped input image as a vector."""
 
@@ -44,20 +160,7 @@ class PCAModel:
         self.outlier_detector = None
         """The trained object used to classify a fitted image as a PCA feature vector."""
 
-        self.image_atlas = None
-        """The atlas image which input images are registered too.
-
-        This image must have the same physical extent as image_ref
-
-        :type: sitk.Image or None
-        """
-
-        dim = 2
-        self.image_ref = sitk.Image([self.SAMPLE_IMAGE_SIZE]*dim, sitk.sitkUInt8)
-        self.image_ref.SetOrigin([-0.5 + (0.5 / self.SAMPLE_IMAGE_SIZE)]*dim)
-        self.image_ref.SetSpacing([1.0 / self.SAMPLE_IMAGE_SIZE]*dim)
-
-    def compute(self, observation_arr: np.ndarray, components: int, contamination=0.10) -> None:
+    def compute(self, observation_arr: np.ndarray, **kwargs) -> None:
         """
         Computes the PCA decomposition, and outlier classifier from the input feature array.
 
@@ -66,6 +169,11 @@ class PCAModel:
         :param contamination:
         :return:
         """
+
+        return self.__compute(observation_arr, **kwargs)
+
+    def __compute(self, observation_arr: np.ndarray, *, components: int, contamination=0.10) -> None:
+
         # observation_arr is an array of ( n, feature_vector, )
 
         self.pca = decomposition.PCA(n_components=components)
@@ -83,31 +191,6 @@ class PCAModel:
 
         self.outlier_detector = EllipticEnvelope(contamination=contamination)
         self.outlier_detector.fit(X)
-
-    def register_to_atlas_and_resample(self, image: sitk.Image, verbose: int = 0) \
-            -> sitk.Image:
-        """
-        Register to the input images to the atlas image, and resample to the reference image coordinates.
-
-        :param image:
-        :param verbose:
-        :return: The registered and resampled image.
-        """
-
-        crop_size = [int(s * self.CROP_SIZE/self.SAMPLE_IMAGE_SIZE) for s in self.image_atlas.GetSize()]
-        fixed_crop = sitk.Crop(self.image_atlas, crop_size, crop_size)
-
-        try:
-            transform, metric_value = registration.cxr_affine(fixed_crop, moving=image, verbose=verbose)
-        except RuntimeError as e:
-            print("Registration Error:")
-            print(e)
-            transform = sitk.TranslationTransform(2)
-
-        return sitk.Resample(image,
-                             referenceImage=self.image_ref,
-                             transform=transform,
-                             outputPixelType=sitk.sitkFloat32)
 
     def outlier_predictor(self, observation_arr: np.ndarray) -> List[int]:
         """
@@ -171,25 +254,3 @@ class PCAModel:
 
         return np.sqrt(self.pca_cov.mahalanobis(reduced_cxr))
 
-    def _arr_to_images(self, observation_arr: np.ndarray) -> List[sitk.Image]:
-        """
-
-        :param observation_arr:
-        :return:
-        """
-        number_of_images = observation_arr.shape[0]
-        size = self.SAMPLE_IMAGE_SIZE - 2 * self.CROP_SIZE
-        return [sitk.GetImageFromArray(observation_arr[i, :].reshape(size, size))
-                for i in range(number_of_images)]
-
-    def _images_to_arr(self, imgs: List[sitk.Image]) -> np.ndarray:
-        crop_size = [self.CROP_SIZE]*2
-        return np.stack([sitk.GetArrayFromImage(sitk.Crop(img, crop_size, crop_size)).ravel() for img in imgs])
-
-    @staticmethod
-    def load_outlier_pcamodel() -> 'PCAModel':
-        """
-        :return: A pre-trained PCAModel object to detect outliers or abnormal CXR images.
-        """
-        data = res.resource_string(__name__, "model/pca-001.pkl")
-        return pickle.loads(data)
