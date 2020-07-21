@@ -4,7 +4,9 @@ from typing import Iterable, Tuple
 
 def cxr_affine(fixed: sitk.Image,
                moving: sitk.Image,
-               verbose: int = 0)\
+               verbose: int = 0,
+               max_iterations: int = 500
+               )\
         -> Tuple[sitk.Transform, float]:
     """
     Perform affine registration between two CXR images. First a 2D similarity transform is optimized
@@ -12,7 +14,8 @@ def cxr_affine(fixed: sitk.Image,
 
     :param fixed: The fixed image, sample points are mapped from the fixed image to the moving
     :param moving: The moving image.
-    :param verbose: 0 - no output, 1 - staged registration results, 2 - output each interation
+    :param verbose: 0 - no output, 1 - staged registration results, 2 - output each iteration
+    :param max_iterations: The maximum number of optimization iteration to perform at each phase.
     :return: Returns tuple of the optimized affine transform mapping points from the fixed image to the moving image,
         and the final optimized metric value.
     """
@@ -41,7 +44,7 @@ def cxr_affine(fixed: sitk.Image,
 
     R.SetOptimizerAsGradientDescentLineSearch(learningRate=0.9,
                                               lineSearchUpperLimit=1.5,
-                                              numberOfIterations=500,
+                                              numberOfIterations=max_iterations,
                                               convergenceMinimumValue=1e-5)
     R.SetOptimizerScalesFromIndexShift()
     R.SetInterpolator(sitk.sitkLinear)
@@ -113,7 +116,9 @@ def avg_resample(fixed: sitk.Image,
 def build_atlas(fixed: sitk.Image,
                 images: Iterable[sitk.Image],
                 fixed_crop_percent=0.10,
-                verbose=0) \
+                verbose=0,
+                max_iterations=500,
+                register_repeat=2) \
         -> sitk.Image:
     """
     Builds an CXR atlas ( average ) by repeatedly registering a list of images to an average, then updating the average.
@@ -122,6 +127,8 @@ def build_atlas(fixed: sitk.Image,
     :param images:
     :param fixed_crop_percent:
     :param verbose:
+    :param max_iterations: The maximum number of iterations per image stage
+    :param register_repeat: The number of time all the images are registered to the average.
     :return:
     """
 
@@ -129,21 +136,31 @@ def build_atlas(fixed: sitk.Image,
 
     crop_size = [int(s * fixed_crop_percent) for s in fixed.GetSize()]
 
-    for iter in range(2):
+    for iter in range(register_repeat):
+
+        if verbose >=1:
+            print("Altas Iteraion {}".format(iter))
+        if verbose >=2:
+            filename = "build_atlas_{}.nrrd".format(iter)
+            print("\tWriting {0}".format(filename))
+            sitk.WriteImage(avg, filename)
 
         fixed_crop = sitk.Crop(avg, crop_size, crop_size)
 
         regs = []
         for moving_img in images:
             try:
-                transform, metric_value = cxr_affine(fixed_crop, moving=moving_img, verbose=verbose)
+                transform, metric_value = cxr_affine(fixed_crop,
+                                                     moving=moving_img,
+                                                     verbose=verbose,
+                                                     max_iterations=max_iterations)
             except RuntimeError as e:
                 print("Registration Error:")
                 print(e)
                 metric_value = 0
                 transform = sitk.TranslationTransform(2)
 
-            regs.append(resample(avg, moving_img, transform, verbose=verbose))
+            regs.append(resample(avg, moving_img, transform, verbose=verbose-1))
 
         avg = sitk.NaryAdd(regs)
         avg /= len(regs)
