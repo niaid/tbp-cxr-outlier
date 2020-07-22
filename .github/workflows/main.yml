@@ -145,8 +145,8 @@ jobs:
         id: files
         run: |
           cd ${{steps.download.outputs.download-path}}
-          echo ::set-output name=file1::$(ls tbpxcr*any.whl)
-          echo ::set-output name=file2::$(ls tbpxcr*.tar.gz)
+          echo ::set-output name=file1::$(ls tbpcxr*any.whl)
+          echo ::set-output name=file2::$(ls tbpcxr*.tar.gz)
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
