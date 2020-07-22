@@ -167,7 +167,7 @@ jobs:
           # a `upload_url`. See this blog post for more info:
           # https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{steps.download.outputs.download-path}}
+          asset_path: ${{steps.download.outputs.download-path}}/${{steps.files.outputs.file1}}
           asset_name: ${{steps.files.outputs.file1}}
           asset_content_type: application/octet-stream
       - name: Upload Release Asset Source
@@ -177,6 +177,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{steps.download.outputs.download-path}}
+          asset_path: ${{steps.download.outputs.download-path}}/${{steps.files.outputs.file2}}
           asset_name: ${{steps.files.outputs.file2}}
           asset_content_type: application/octet-stream
