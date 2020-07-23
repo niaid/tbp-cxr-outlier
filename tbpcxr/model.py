@@ -125,18 +125,28 @@ class Model(ABC):
         """
         :return: A pre-trained PCAModel object to detect outliers or abnormal CXR images.
         """
-        return __class__.load_model("pca-001.pkl")
+        return __class__.load_model("pca-001")
 
     @staticmethod
     def load_model(name: str) -> 'Model':
         """
+        Loads a model named in :data:`tbpcxr.model_list` or a provided filename of a pickled Model object.
 
-        :param name:
-        :return:
+        This method provides a unified interface for loading Model objects.
+
+        :param name: The name of a model from the tbpcxr module or a path of a `pkl` file.
+        :return: A restored :obj:`Model` object.
         """
 
-        data = res.resource_string(__name__, os.path.join("model", name))
-        return pickle.loads(data)
+        model_list = res.resource_listdir(__name__, "model")
+
+        model_list = [os.path.splitext(fn)[0] for fn in model_list]
+        if name in model_list:
+            data = res.resource_string(__name__, os.path.join("model", name+".pkl"))
+            return pickle.loads(data)
+        else:
+            with open(name, "rb") as fp:
+                return pickle.load(fp)
 
 
 class PCAModel(Model):

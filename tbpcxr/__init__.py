@@ -1,4 +1,5 @@
 import pkg_resources as res
+import os
 
 try:
     from importlib.metadata import version, PackageNotFoundError
@@ -16,7 +17,8 @@ except PackageNotFoundError:
     pass
 
 
-model_list = res.resource_listdir(__name__, "model")
+model_list = [os.path.splitext(fn)[0] for fn in res.resource_listdir(__name__, "model")]
 
+del os
 
 __author__ = ["Bradley Lowekamp"]
