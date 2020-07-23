@@ -11,19 +11,16 @@ Example
 
 .. code-block:: python
 
- from tbpcxr.model import PCAModel
- from tbpcxr.utilities import normalize_img, read_dcm
+ from tbpcxr.model import Model
+ from tbpcxr.utilities import read_dcm
 
- outlier_pcamodel = PCAModel.load_outlier_pcamodel()
+ outlier_model = Model.load_outlier_pcamodel()
 
  img = read_dcm(path_to_file)
 
- nimg = normalize_img(img)
+ arr = outlier_model.to_observations([img])
 
- rimg = outlier_pcamodel.register_to_atlas_and_resample(nimg, verbose=0)
- arr = outlier_pcamodel._images_to_arr([rimg])
-
- if outlier_pcamodel.outlier_predictor(arr)[0] == -1:
+ if outlier_model.outlier_predictor(arr)[0] == -1:
     print("{} is an outlier".format(path_to_file))
 
 
