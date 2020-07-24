@@ -1,5 +1,4 @@
-from tbpcxr.model import PCAModel, Model
-from tbpcxr.utilities import normalize_img
+from tbpcxr.model import Model
 import tbpcxr
 import SimpleITK as sitk
 import pytest
@@ -7,6 +6,7 @@ import os.path
 
 path_to_current_file = os.path.realpath(__file__)
 current_directory = os.path.dirname(path_to_current_file)
+
 
 @pytest.fixture
 def outlier_pcamodel():
@@ -22,9 +22,12 @@ def test_load_outlier_pcamodel():
     assert model.pca is not None
     assert model.outlier_detector is not None
 
+
 model_fname = [
     "cxr-test-06c.pkl"
 ]
+
+
 @pytest.mark.parametrize("model_name",
                          tbpcxr.model_list +
                          [os.path.join(current_directory, "data", fn) for fn in model_fname])
@@ -39,6 +42,7 @@ def test_load_model(model_name):
 
     img = model.register_to_atlas_and_resample(sitk.Noise(model.image_atlas))
     assert all([s == model.reference_size for s in img.GetSize()])
+
 
 data_fname = [
     "00000041_005.png",
