@@ -1,5 +1,4 @@
 import tbpcxr
-import pytest
 
 
 def test_tbpcxr():

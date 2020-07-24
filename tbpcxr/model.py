@@ -57,7 +57,7 @@ class Model(ABC):
 
     @abstractmethod
     def compute(self, observation_arr: np.ndarray, **kwargs) -> None:
-        raise NotImplemented
+        raise NotImplementedError
 
     @property
     def reference_size(self):
@@ -263,4 +263,3 @@ class PCAModel(Model):
         reduced_cxr = self.pca.transform(observation_arr)
 
         return np.sqrt(self.pca_cov.mahalanobis(reduced_cxr))
-

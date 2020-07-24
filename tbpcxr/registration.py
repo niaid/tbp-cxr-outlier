@@ -36,7 +36,7 @@ def cxr_affine(fixed: sitk.Image,
     R.SetSmoothingSigmasPerLevel([1 / 32.0])
 
     R.SetMetricAsMattesMutualInformation()
-    #R.SetMetricAsCorrelation()
+    # R.SetMetricAsCorrelation()
     # R.SetMetricMovingMask(moving!=0)
     # R.SetOptimizerAsGradientDescent(learningRate=0.9,
     #                                numberOfIterations=500,
@@ -138,9 +138,9 @@ def build_atlas(fixed: sitk.Image,
 
     for iter in range(register_repeat):
 
-        if verbose >=1:
+        if verbose >= 1:
             print("Altas Iteraion {}".format(iter))
-        if verbose >=2:
+        if verbose >= 2:
             filename = "build_atlas_{}.nrrd".format(iter)
             print("\tWriting {0}".format(filename))
             sitk.WriteImage(avg, filename)
@@ -157,7 +157,6 @@ def build_atlas(fixed: sitk.Image,
             except RuntimeError as e:
                 print("Registration Error:")
                 print(e)
-                metric_value = 0
                 transform = sitk.TranslationTransform(2)
 
             regs.append(resample(avg, moving_img, transform, verbose=verbose-1))
