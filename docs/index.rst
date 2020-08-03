@@ -35,17 +35,6 @@ Documentation for directly using the Python functions.
    api
 
 
-Command Line Interface Reference
---------------------------------
-
-Documentation for command line usage of the Python module.
-
-.. toctree::
-   :maxdepth: 2
-
-   commandline
-
-
 Development
 -----------
 
