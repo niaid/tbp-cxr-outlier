@@ -34,7 +34,6 @@ author = 'Bradley Lowekamp'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx_click.ext',
     'sphinx_autodoc_typehints',
 ]
 
