@@ -1,4 +1,3 @@
 SimpleITK >= 2.0.0rc2
 numpy
-matplotlib
 scikit-learn
