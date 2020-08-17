@@ -125,7 +125,7 @@ class Model(ABC):
         """
         :return: A pre-trained PCAModel object to detect outliers or abnormal CXR images.
         """
-        return __class__.load_model("pca-001")
+        return __class__.load_model("pca-35-06c")
 
     @staticmethod
     def load_model(name: str) -> 'Model':
