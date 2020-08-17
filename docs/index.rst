@@ -9,6 +9,8 @@ Welcome to tbpcxr's documentation!
 Example
 -------
 
+To process a single image:
+
 .. code-block:: python
 
  from tbpcxr.model import Model
@@ -22,6 +24,23 @@ Example
 
  if outlier_model.outlier_predictor(arr)[0] == -1:
     print("{} is an outlier".format(path_to_file))
+
+
+Multiple images can efficiently be processed by using Python `map` function, which
+
+.. code-block:: python
+
+ from tbpcxr.model import Model
+ from tbpcxr.utilities import read_dcm
+
+ outlier_model = Model.load_outlier_pcamodel()
+
+ arr = outlier_model.to_observations(map(read_dcm, image_file_list))
+
+ results = outlier_model.outlier_predictor(arr)
+
+ if fn in [fn for fn, o in zip(image_file_list, results) if o == -1]:
+    print("{} is an outlier".format(fn))
 
 
 API Reference
