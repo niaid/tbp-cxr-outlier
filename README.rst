@@ -38,8 +38,8 @@ For now, use the `latest`_ development version of SimpleITK::
 
  python -m pip install --upgrade --pre SimpleITK --find-links https://github.com/SimpleITK/SimpleITK/releases/tag/latest
 
-Other dependencies are conventionally specified in `setup.py` and `requirements.txt` and will be installed as
-when the wheel is installed.
+Other dependencies are conventionally specified in `setup.py` and `requirements.txt` and therefore installed as dependencies when
+the wheel is installed.
 
 
 Contact
