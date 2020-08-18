@@ -39,7 +39,7 @@ Multiple images can efficiently be processed by using Python `map` function, whi
 
  results = outlier_model.outlier_predictor(arr)
 
- if fn in [fn for fn, o in zip(image_file_list, results) if o == -1]:
+ for fn in [fn for fn, o in zip(image_file_list, results) if o == -1]:
     print("{} is an outlier".format(fn))
 
 
