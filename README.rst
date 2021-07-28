@@ -25,16 +25,38 @@ The master built Sphinx documentation is available for download from
 Installation
 ------------
 
-The Python module is distributed as a `wheel`_ binary package. Download the latest tagged release from the
-`Github Releases`_ page. Then install::
+The Python module is distributed as a `wheel`_ binary package.
+
+
+Dependencies are conventionally specified in `setup.py` and `requirements.txt`. This include dependencies on internal
+packages not host on the public pypi.org.
+
+NIAID Artifactory
+^^^^^^^^^^^^^^^^^
+
+It is recommended to install the `tbpcxr` package from the internal NIAID Python Package Index (PyPI) hosted on
+artifactory with `pip`. This enables internal dependencies to be automatically download from the artifactory. The
+internal repository can be automatically used by setting an environment variable::
+
+ PIP_EXTRA_INDEX_URL=https://{USERNAME}:{PASSWORD}@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
+
+Then the `tbpcxr` package can be installed::
+
+ python -m pip install tbpcxr
+
+Github Releases
+^^^^^^^^^^^^^^^
+
+Wheels from the master branch can be download wheel from `Github Actions`_ in the "python-package" artifact.
+
+Download the latest tagged release from the `Github Releases`_ page.
+
+The wheel lists the package dependencies which are required for successful installation. This include internal NIAID
+packages. If the internal "artifactory" repository is not configured then these additional dependencies will need to be
+manually downloaded and installed before install `tbpcxr`. The downloaded wheels can be installed::
 
  python -m pip install tbpcxr-0.1-py3-none-any.whl
 
-Wheels from the master branch can be download wheel from `Github Actions`_ in the
-"python-package" artifact.
-
-Dependencies are conventionally specified in `setup.py` and `requirements.txt` and therefore installed as
-dependencies when the wheel is installed. This includes the SimpleITK 2.0 requirement.
 
 Contact
 -------
