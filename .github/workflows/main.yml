@@ -47,7 +47,7 @@ jobs:
         pip install -r requirements.txt -r requirements-dev.txt
         pip install -e .
       env:
-        PIP_EXTRA_INDEX_URL: https://${{secrets.BCBB_PYPI_USERNAME}}:${{secrets.BCBB_PYPI_PASSWORD}}@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
+        PIP_EXTRA_INDEX_URL: https://${{secrets.ARTIFACTORY_RO_USER}}:${{secrets.ARTIFACTORY_RO_TOKEN}}@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -98,7 +98,7 @@ jobs:
           python -m pip install -r requirements.txt -r requirements-dev.txt -r docs/requirements.txt
           python -m pip install wheel
         env:
-          PIP_EXTRA_INDEX_URL: https://${{secrets.BCBB_PYPI_USERNAME}}:${{secrets.BCBB_PYPI_PASSWORD}}@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
+          PIP_EXTRA_INDEX_URL: https://${{secrets.ARTIFACTORY_RO_USER}}:${{secrets.ARTIFACTORY_RO_TOKEN}}@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
       - name: Build package
         run: |
           python setup.py sdist bdist_wheel
