@@ -1,6 +1,6 @@
 import SimpleITK as sitk
 import numpy as np
-from rap_sitkcore import read_dcm
+from rap_sitkcore import read_dcm  # noqa F401
 
 
 def normalize_img(
