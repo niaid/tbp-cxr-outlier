@@ -3,6 +3,7 @@ import os
 
 try:
     from importlib.metadata import version, PackageNotFoundError
+
     __version__ = version(__name__)
 except ImportError:
     from pkg_resources import get_distribution, DistributionNotFound

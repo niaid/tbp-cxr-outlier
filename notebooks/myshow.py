@@ -40,12 +40,12 @@ def myshow(img, title=None, margin=0.05, dpi=80):
 
     def callback(z=None):
 
-        extent = (0, xsize*spacing[1], ysize*spacing[0], 0)
+        extent = (0, xsize * spacing[1], ysize * spacing[0], 0)
 
         fig = plt.figure(figsize=figsize, dpi=dpi)
 
         # Make the axis the right size...
-        ax = fig.add_axes([margin, margin, 1 - 2*margin, 1 - 2*margin])
+        ax = fig.add_axes([margin, margin, 1 - 2 * margin, 1 - 2 * margin])
 
         plt.set_cmap("gray")
 
@@ -60,7 +60,7 @@ def myshow(img, title=None, margin=0.05, dpi=80):
         plt.show()
 
     if slicer:
-        interact(callback, z=(0, nda.shape[0]-1))
+        interact(callback, z=(0, nda.shape[0] - 1))
     else:
         callback()
 
@@ -79,15 +79,15 @@ def myshow3d(img, xslices=[], yslices=[], zslices=[], title=None, margin=0.05, d
     d = 0
 
     if len(img_xslices):
-        img_slices += img_xslices + [img_null]*(maxlen-len(img_xslices))
+        img_slices += img_xslices + [img_null] * (maxlen - len(img_xslices))
         d += 1
 
     if len(img_yslices):
-        img_slices += img_yslices + [img_null]*(maxlen-len(img_yslices))
+        img_slices += img_yslices + [img_null] * (maxlen - len(img_yslices))
         d += 1
 
     if len(img_zslices):
-        img_slices += img_zslices + [img_null]*(maxlen-len(img_zslices))
+        img_slices += img_zslices + [img_null] * (maxlen - len(img_zslices))
         d += 1
 
     if maxlen != 0:

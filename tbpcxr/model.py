@@ -74,8 +74,7 @@ class Model(ABC):
 
         return self._images_to_arr(img_list)
 
-    def register_to_atlas_and_resample(self, image: sitk.Image, verbose: int = 0) \
-            -> sitk.Image:
+    def register_to_atlas_and_resample(self, image: sitk.Image, verbose: int = 0) -> sitk.Image:
         """
         Register to the input images to the atlas image, and resample to the reference image coordinates.
 
@@ -93,10 +92,9 @@ class Model(ABC):
             print(e)
             transform = sitk.TranslationTransform(2)
 
-        return sitk.Resample(image,
-                             referenceImage=self.image_reference,
-                             transform=transform,
-                             outputPixelType=sitk.sitkFloat32)
+        return sitk.Resample(
+            image, referenceImage=self.image_reference, transform=transform, outputPixelType=sitk.sitkFloat32
+        )
 
     @property
     def image_atlas_cropped(self):
@@ -110,25 +108,24 @@ class Model(ABC):
         :return:
         """
         size = self.reference_size - 2 * self.reference_crop
-        if len(observation_arr) == size**2:
+        if len(observation_arr) == size ** 2:
             return sitk.GetImageFromArray(observation_arr.reshape(size, size))
 
-        return [sitk.GetImageFromArray(arr.reshape(size, size))
-                for arr in observation_arr]
+        return [sitk.GetImageFromArray(arr.reshape(size, size)) for arr in observation_arr]
 
     def _images_to_arr(self, imgs: List[sitk.Image]) -> np.ndarray:
         crop_size = [self.reference_crop] * 2
         return np.stack([sitk.GetArrayFromImage(sitk.Crop(img, crop_size, crop_size)).ravel() for img in imgs])
 
     @staticmethod
-    def load_outlier_pcamodel() -> 'Model':
+    def load_outlier_pcamodel() -> "Model":
         """
         :return: A pre-trained PCAModel object to detect outliers or abnormal CXR images.
         """
         return __class__.load_model("pca-35-06c")
 
     @staticmethod
-    def load_model(name: str) -> 'Model':
+    def load_model(name: str) -> "Model":
         """
         Loads a model named in :data:`tbpcxr.model_list` or a provided filename of a pickled Model object.
 
@@ -142,7 +139,7 @@ class Model(ABC):
 
         model_list = [os.path.splitext(fn)[0] for fn in model_list]
         if name in model_list:
-            data = res.resource_string(__name__, os.path.join("model", name+".pkl"))
+            data = res.resource_string(__name__, os.path.join("model", name + ".pkl"))
             return pickle.loads(data)
         else:
             with open(name, "rb") as fp:
