@@ -23,14 +23,12 @@ def test_load_outlier_pcamodel():
     assert model.outlier_detector is not None
 
 
-model_fname = [
-    "cxr-test-06c.pkl"
-]
+model_fname = ["cxr-test-06c.pkl"]
 
 
-@pytest.mark.parametrize("model_name",
-                         tbpcxr.model_list +
-                         [os.path.join(current_directory, "data", fn) for fn in model_fname])
+@pytest.mark.parametrize(
+    "model_name", tbpcxr.model_list + [os.path.join(current_directory, "data", fn) for fn in model_fname]
+)
 def test_load_model(model_name):
     model = Model.load_model(model_name)
 
@@ -53,8 +51,7 @@ data_fname = [
 ]
 
 
-@pytest.mark.parametrize("filename, outlier_class",
-                         [pytest.param(fn, 1) for fn in data_fname])
+@pytest.mark.parametrize("filename, outlier_class", [pytest.param(fn, 1) for fn in data_fname])
 def test_A(filename, outlier_class, outlier_pcamodel):
 
     path_to_file = os.path.join(current_directory, "data", filename)

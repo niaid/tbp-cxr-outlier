@@ -3,10 +3,9 @@ import numpy as np
 from rap_sitkcore import read_dcm
 
 
-def normalize_img(image: sitk.Image,
-                  sample_size: int = 64,
-                  smoothing_sigma_in_output_pixels: float = 0.75) \
-        -> sitk.Image:
+def normalize_img(
+    image: sitk.Image, sample_size: int = 64, smoothing_sigma_in_output_pixels: float = 0.75
+) -> sitk.Image:
     """
     The input image is resampled with translation and scaling to fit into a unit square centered at the origin. The
     physical extend of the output is within [-0.5, 0.5]. The aspect ratio of the input image is preserved. The input's
@@ -25,7 +24,7 @@ def normalize_img(image: sitk.Image,
 
     image.SetDirection(np.identity(dim).ravel().tolist())
 
-    max_physical_size = max([sz*sp for sz, sp in zip(original_size, original_spacing)])
+    max_physical_size = max([sz * sp for sz, sp in zip(original_size, original_spacing)])
 
     # move origin so that the corner ( continuous index -.5 ) is at the origin
     image.SetOrigin([sp * 0.5 for sz, sp in zip(original_size, original_spacing)])
@@ -36,20 +35,22 @@ def normalize_img(image: sitk.Image,
     tx.SetScale((scale,) * dim)
 
     output_spacing = (1.0 / sample_size,) * dim
-    output_size = [int(sample_size*sz*sp/max_physical_size) for sz, sp in zip(original_size, original_spacing)]
+    output_size = [int(sample_size * sz * sp / max_physical_size) for sz, sp in zip(original_size, original_spacing)]
     output_origin = [0.5 / sample_size] * dim
 
-    image = sitk.SmoothingRecursiveGaussian(image,
-                                            [smoothing_sigma_in_output_pixels * max_physical_size / sample_size] * dim)
+    image = sitk.SmoothingRecursiveGaussian(
+        image, [smoothing_sigma_in_output_pixels * max_physical_size / sample_size] * dim
+    )
     image = sitk.Normalize(image)
-    image = sitk.Resample(image,
-                          transform=tx,
-                          size=output_size,
-                          outputSpacing=output_spacing,
-                          outputOrigin=output_origin,
-                          outputDirection=np.identity(dim).ravel().tolist(),
-                          useNearestNeighborExtrapolator=False
-                          )
+    image = sitk.Resample(
+        image,
+        transform=tx,
+        size=output_size,
+        outputSpacing=output_spacing,
+        outputOrigin=output_origin,
+        outputDirection=np.identity(dim).ravel().tolist(),
+        useNearestNeighborExtrapolator=False,
+    )
 
     # center the image at the zero-origin
     center = image.TransformContinuousIndexToPhysicalPoint([idx / 2.0 for idx in image.GetSize()])
