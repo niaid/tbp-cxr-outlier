@@ -203,3 +203,11 @@ jobs:
           asset_path: ${{steps.download.outputs.download-path}}/${{steps.files.outputs.file2}}
           asset_name: ${{steps.files.outputs.file2}}
           asset_content_type: application/octet-stream
+      - name: bcbb-pypi upload
+        run: |
+          python -m twine check ${{steps.download.outputs.download-path}}/*
+          python -m twine upload ${{steps.download.outputs.download-path}}/*
+        env:
+          TWINE_REPOSITORY_URL: https://artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi
+          TWINE_PASSWORD: ${{secrets.BCBB_PYPI_PASSWORD}}
+          TWINE_USERNAME: ${{secrets.BCBB_PYPI_USERNAME}}
