@@ -22,7 +22,6 @@ jobs:
     - name: Install tools
       run: |
         python -m pip install --upgrade pip
-        pip install numpy~=1.17.4
         pip install -r requirements-dev.txt
     - name: Lint with black
       run: |
@@ -117,7 +116,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt -r requirements-dev.txt -r docs/requirements.txt
-          python -m pip install wheel twine
+          python -m pip install wheel
         env:
           PIP_EXTRA_INDEX_URL: https://${{secrets.ARTIFACTORY_RO_USER}}:${{secrets.ARTIFACTORY_RO_TOKEN}}@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
       - name: Build package
@@ -205,6 +204,7 @@ jobs:
           asset_content_type: application/octet-stream
       - name: bcbb-pypi upload
         run: |
+          python -m pip install twine
           python -m twine check ${{steps.download.outputs.download-path}}/*
           python -m twine upload ${{steps.download.outputs.download-path}}/*
         env:
