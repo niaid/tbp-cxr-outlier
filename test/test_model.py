@@ -53,7 +53,6 @@ data_fname = [
 
 @pytest.mark.parametrize("filename, outlier_class", [pytest.param(fn, 1) for fn in data_fname])
 def test_A(filename, outlier_class, outlier_pcamodel):
-
     path_to_file = os.path.join(current_directory, "data", filename)
 
     img = sitk.ReadImage(path_to_file, sitk.sitkFloat32)

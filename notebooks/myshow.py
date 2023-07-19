@@ -39,7 +39,6 @@ def myshow(img, title=None, margin=0.05, dpi=80):
     figsize = (1 + margin) * ysize / dpi, (1 + margin) * xsize / dpi
 
     def callback(z=None):
-
         extent = (0, xsize * spacing[1], ysize * spacing[0], 0)
 
         fig = plt.figure(figsize=figsize, dpi=dpi)
@@ -66,7 +65,6 @@ def myshow(img, title=None, margin=0.05, dpi=80):
 
 
 def myshow3d(img, xslices=[], yslices=[], zslices=[], title=None, margin=0.05, dpi=80):
-
     img_xslices = [img[s, :, :] for s in xslices]
     img_yslices = [img[:, s, :] for s in yslices]
     img_zslices = [img[:, :, s] for s in zslices]

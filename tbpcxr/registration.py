@@ -81,7 +81,6 @@ def cxr_affine(
 
 
 def resample(fixed: sitk.Image, moving: sitk.Image, transform: sitk.Transform, verbose=0):
-
     resampler = sitk.ResampleImageFilter()
     resampler.SetReferenceImage(fixed)
     resampler.SetTransform(transform)
@@ -133,7 +132,6 @@ def build_atlas(
     crop_size = [int(s * fixed_crop_percent) for s in fixed.GetSize()]
 
     for iter in range(register_repeat):
-
         if verbose >= 1:
             print("Altas Iteraion {}".format(iter))
         if verbose >= 2:
