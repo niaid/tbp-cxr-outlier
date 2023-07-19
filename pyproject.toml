@@ -1,6 +1,44 @@
 [build-system]
-requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4"]
+requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=6.2"]
+
+
+[project]
+name = "tbpcxr"
+authors = [
+  { name="Bradley Lowekamp", email="bioinformatics@niaid.nih.gov" },
+]
+description = "Chest X-Ray outlier detector."
+readme = "README.rst"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies", "version"]
+
+[project.urls]
+homepage = "https://www.niaid.nih.gov/research/bioinformatics-computational-biosciences-branch"
+source = "https://github.com/niaid/tbp-cxr-outlier"
+documentation = "https://niaid.github.io/tbp-cxr-outlier"
+
+[project.optional-dependencies]
+dev = [
+  "pytest"
+]
+
+[tool.setuptools]
+packages = ["tbpcxr", "tbpcxr.model"]
+package-data = {"tbpcxr.model" = [ "*.pkl"] }
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
 
 [tool.black]
 line-length =  120
 exclude = '(docs/conf\.py)|venv*'
+
+[tool.setuptools_scm]
+write_to = "tbpcxr/_version.py"
+local_scheme = "dirty-tag"
+
