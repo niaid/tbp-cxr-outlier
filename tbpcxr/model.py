@@ -34,7 +34,6 @@ class Model(ABC):
     """
 
     def __init__(self, reference_size=64, reference_crop=6):
-
         # check for sanity of remaining image
         assert reference_size > reference_crop * 2
 
@@ -65,7 +64,6 @@ class Model(ABC):
         return self.image_reference.GetSize()[0]
 
     def to_observations(self, images: List[sitk.Image], verbose: int = 0) -> np.ndarray:
-
         img_list = []
         for img in images:
             img = utilities.normalize_img(img, self.reference_size)
@@ -108,7 +106,7 @@ class Model(ABC):
         :return:
         """
         size = self.reference_size - 2 * self.reference_crop
-        if len(observation_arr) == size ** 2:
+        if len(observation_arr) == size**2:
             return sitk.GetImageFromArray(observation_arr.reshape(size, size))
 
         return [sitk.GetImageFromArray(arr.reshape(size, size)) for arr in observation_arr]
@@ -155,7 +153,6 @@ class PCAModel(Model):
     """
 
     def __init__(self, reference_size=64, reference_crop=6):
-
         super().__init__(reference_size, reference_crop)
 
         self.pca = None
@@ -180,7 +177,6 @@ class PCAModel(Model):
         return self.__compute(observation_arr, **kwargs)
 
     def __compute(self, observation_arr: np.ndarray, *, components: int, contamination=0.10) -> None:
-
         # observation_arr is an array of ( n, feature_vector, )
 
         self.pca = decomposition.PCA(n_components=components)
