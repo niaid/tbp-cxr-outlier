@@ -38,8 +38,8 @@ class Model(ABC):
         assert reference_size > reference_crop * 2
 
         self.reference_crop = reference_crop
-        """The reference image, image atlas, and input images are cropped by this amount on each edge for registration, and
-        the PCA feature vector."""
+        """The reference image, image atlas, and input images are cropped by this amount on each edge for registration,
+         and the PCA feature vector."""
 
         self.image_atlas = None
         """The atlas image which input images are registered too.
