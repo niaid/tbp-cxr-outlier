@@ -72,7 +72,7 @@ jobs:
       run: |
         python -m pytest
 
-  package_docs:
+  package:
     needs: test
     runs-on: ubuntu-latest
 
@@ -113,34 +113,7 @@ jobs:
         with:
           name: python-packages
           path: dist
-      - name: Build Sphinx Documentation
-        run: |
-          # install so that setuptools_scm generate version for package
-          pip install -r docs/requirements.txt -e .
-          make -C docs html
-        env:
-          PIP_EXTRA_INDEX_URL: https://${{secrets.ARTIFACTORY_RO_USER}}:${{secrets.ARTIFACTORY_RO_TOKEN}}@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
 
-      - name: Upload documentation
-        if: github.event_name == 'push'
-        uses: actions/upload-artifact@v3
-        with:
-          name: sphinx-docs
-          path: docs/_build/html
-      - name: Update gh-pages
-        if: github.ref == 'refs/heads/master'
-        run: |
-          rm docs/_build/html/.buildinfo
-          touch docs/_build/html/.nojekyll
-
-          git update-ref refs/heads/${TARGET_BRANCH} origin/${TARGET_BRANCH}
-          ./utils/update-gh-pages.sh docs/_build/html
-
-          repo_uri="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git push $repo_uri ${TARGET_BRANCH}
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
-          TARGET_BRANCH: 'gh-pages'
   publish_release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: package_docs
