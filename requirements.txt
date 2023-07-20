@@ -1,5 +1,3 @@
 SimpleITK >= 2.0.0
 numpy
 scikit-learn ~= 1.3.0
-# Hosted on artifactory.niaid.nih.gov in bcbb-pypi
-rap_sitkcore

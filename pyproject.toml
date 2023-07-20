@@ -23,9 +23,9 @@ source = "https://github.com/niaid/tbp-cxr-outlier"
 documentation = "https://niaid.github.io/tbp-cxr-outlier"
 
 [project.optional-dependencies]
-dev = [
-  "pytest"
-]
+dev = ["pytest"]
+# Hosted on artifactory.niaid.nih.gov in bcbb-pypi
+sitkcore=["rap_sitkcore"]
 
 [tool.setuptools]
 packages = ["tbpcxr", "tbpcxr.model"]
