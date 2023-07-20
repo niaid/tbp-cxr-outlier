@@ -41,7 +41,7 @@ jobs:
       - name: Build Sphinx Documentation
         run: |
           make -C docs html
-          rm docs/build/html/.buildinfo
+          rm docs/_build/html/.buildinfo
 
       - name: Upload documentation
         uses: actions/upload-artifact@v3
