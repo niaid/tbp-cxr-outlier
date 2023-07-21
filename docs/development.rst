@@ -25,14 +25,14 @@ Linting
 
 The linting processes are configured and run with `pre-commit <https://pre-commit.com>`_. Using pre-commit provides
 a single file ( ".pre-commit-config.yaml" ) configuration for both execution of CI and local git pre-commit hooks. The
-"pre-commit" package does not need to be installed in the projects venv. One initialized for the project, pre-commit
+"pre-commit" package does not need to be installed in the projects venv. Once initialized for the project, pre-commit
 will manage the versions of the tools in a separate environment, that is automatically managed.
 
 The following is the `quick start guide <https://pre-commit.com/#quick-start>`_.
 
 The linting process uses both `Black <https://black.readthedocs.io/en/stable/>`_  and
-`flake8 <https://flake8.pycqa.org/en/latest/>`_ to ensure uncompromising code formatting and some programmatic problems.
-The Black must be used to auto format new code before committing:
+`flake8 <https://flake8.pycqa.org/en/latest/>`_ to ensure uncompromising code formatting and identify programmatic
+problems. The black code formatting tool must be used to auto format new code before committing:
 
 .. code:: bash
 

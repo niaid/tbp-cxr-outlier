@@ -19,7 +19,7 @@ To classify a single image:
     print("{} is an outlier".format(path_to_file))
 
 
-Multiple images can efficiently be processed by using Python `map` function, which
+Multiple images can efficiently be processed by using Python's `map` function, which
 
 .. code-block:: python
 
