@@ -15,21 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v3
       with:
-        python-version: 3.8
-    - name: Install tools
+        fetch-depth: 0
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+        cache: 'pip'
+    - name: Linting with pre-commit
       run: |
-        python -m pip install --upgrade pip
-        pip install black flake8
-    - name: Lint with black
-      run: |
-        python -m black --check --diff .
-    - name: Lint with flake8
-      run: |
-        # stop the build for flake8 issues
-        python -m flake8 . --show-source --statistics
+        python -m pip install pre-commit
+        pre-commit run --all-files
 
   test:
     needs: linting

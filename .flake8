@@ -1,6 +1,0 @@
-[flake8]
-ignore =
- # Not consistent with black formatting
- E203
-max-line-length: 120
-exclude: .git,__pycache__,docs/conf.py,build,dist
