@@ -25,24 +25,25 @@ The master built Sphinx documentation is available for download from
 Installation
 ------------
 
-The Python module is distributed as a `wheel`_ binary package.
+The Python module is distributed as a `wheel`_ binary package which defines the package dependencies.
 
+The package `rap_sitkcore` is an optional dependency. It can be specified when installing with the optional dependency
+package notation `tbpcxr[sitkcore]`. The `rap_sitkcore` package is hosted on the NIAID artifactory. It provides
+additional robust reading for problematic `TBPortals`_ DICOM file which should be addressed in the published
+dataset.
 
-Dependencies are conventionally specified in `setup.py` and `requirements.txt`. This include dependencies on internal
-packages not host on the public pypi.org.
+Internal NIAID Artifactory
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-NIAID Artifactory
-^^^^^^^^^^^^^^^^^
-
-It is recommended to install the `tbpcxr` package from the internal NIAID Python Package Index (PyPI) hosted on
-artifactory with `pip`. This enables internal dependencies to be automatically download from the artifactory. The
+Internally the `tbpcxr` package is hosted on the NIAID Python Package Index (PyPI) hosted on artifactory and is
+installable with `pip`. This enables internal dependencies to be automatically download from the artifactory. The
 internal repository can be automatically used by setting an environment variable::
 
  PIP_EXTRA_INDEX_URL=https://{USERNAME}:{PASSWORD}@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
 
 Then the `tbpcxr` package can be installed::
 
- python -m pip install tbpcxr
+ python -m pip install tbpcxr[sitkcore]
 
 Github Releases
 ^^^^^^^^^^^^^^^
@@ -65,7 +66,7 @@ Please use the `GitHub Issues`_ for support and code issues related to the tbp-c
 
 Additionally, we can be emailed at: bioinformatics@niaid.nih.gov Please include "tbp-cxr-outlier" in the subject line.
 
-
+.. _TBPortals: https://tbportals.niaid.nih.gov/
 .. _SimpleITK toolkit: https://simpleitk.org
 .. _pip: https://pip.pypa.io/en/stable/quickstart/
 .. _Github Actions: https://github.com/niaid/tbp-cxr-outlier/actions?query=branch%3Amaster
