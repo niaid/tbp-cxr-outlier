@@ -1,6 +1,8 @@
 API
 ===
 
+Documentation for directly using the Python functions.
+
 .. automodule:: tbpcxr
     :members:
 
