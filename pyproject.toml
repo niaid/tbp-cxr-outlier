@@ -42,3 +42,8 @@ exclude = '(docs/conf\.py)|venv*'
 write_to = "tbpcxr/_version.py"
 local_scheme = "dirty-tag"
 
+[tool.flake8]
+ignore = ['E203']
+max-line-length = 120
+exclude =  [".git","__pycache__","docs/conf.py"]
+
