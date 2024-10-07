@@ -133,7 +133,7 @@ def build_atlas(
 
     for iter in range(register_repeat):
         if verbose >= 1:
-            print("Altas Iteraion {}".format(iter))
+            print("Atlas Iteration {}".format(iter))
         if verbose >= 2:
             filename = "build_atlas_{}.nrrd".format(iter)
             print("\tWriting {0}".format(filename))

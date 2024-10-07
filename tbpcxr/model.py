@@ -1,5 +1,9 @@
-import pkg_resources as res
-import os
+import sys
+
+if sys.version_info < (3, 9):
+    import importlib_resources
+else:
+    import importlib.resources as importlib_resources
 
 from sklearn import decomposition
 import SimpleITK as sitk
@@ -16,6 +20,7 @@ import pickle
 
 from . import registration
 from . import utilities
+from .data import model_list
 
 
 class Model(ABC):
@@ -132,12 +137,10 @@ class Model(ABC):
         :param name: The name of a model from the tbpcxr module or a path of a `pkl` file.
         :return: A restored :obj:`Model` object.
         """
-
-        model_list = res.resource_listdir(__name__, "model")
-
-        model_list = [os.path.splitext(fn)[0] for fn in model_list]
         if name in model_list:
-            data = res.resource_string(__name__, os.path.join("model", name + ".pkl"))
+            ref = importlib_resources.files("tbpcxr.data") / name
+            ref = ref.with_suffix(".pkl")
+            data = ref.read_bytes()
             return pickle.loads(data)
         else:
             with open(name, "rb") as fp:
@@ -146,7 +149,7 @@ class Model(ABC):
 
 class PCAModel(Model):
     """
-    The PCAModel uses Principle Components Analyst to represent a feature space of images.
+    The PCAModel uses Principal Components Analysis to represent a feature space of images.
 
     This class represents a model of an expected image to detect if another image conforms to the model or is an
     outlier.

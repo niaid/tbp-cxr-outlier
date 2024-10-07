@@ -1,3 +1,5 @@
+# if python is less than 3.9 require importlib_resources
+importlib_resources >= 1.4; python_version < "3.9"
 SimpleITK >= 2.0.0
 numpy<2.0.0 # scikkit-learn does not provide a maximum version for numpy
 scikit-learn == 1.3.0

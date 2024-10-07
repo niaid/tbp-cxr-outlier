@@ -9,6 +9,7 @@ except ImportError:
         """
         Read an x-ray DICOM file with GDCMImageIO, reducing it to 2D from 3D as needed.
         Only the SimpleITK GDCM reader is tried.
+
         :param filename: A DICOM filename
         :return: a 2D SimpleITK Image
         """
