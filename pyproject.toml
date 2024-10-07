@@ -28,8 +28,7 @@ dev = ["pytest"]
 sitkcore=["rap_sitkcore"]
 
 [tool.setuptools]
-packages = ["tbpcxr", "tbpcxr.model"]
-package-data = {"tbpcxr.model" = [ "*.pkl"] }
+packages = ["tbpcxr", "tbpcxr.data"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
