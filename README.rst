@@ -27,23 +27,33 @@ Installation
 
 The Python module is distributed as a `wheel`_ binary package which defines the package dependencies.
 
-The package `rap_sitkcore` is an optional dependency. It can be specified when installing with the optional dependency
-package notation `tbpcxr[sitkcore]`. The `rap_sitkcore` package is hosted on the NIAID artifactory. It provides
-additional robust reading for problematic `TBPortals`_ DICOM file which should be addressed in the published
-dataset.
+The package `rap_sitkcore`_ is an optional dependency used for reading DICOM files. It provides
+additional robust reading for difficult `TBPortals`_ DICOM files which may be addressed in some published
+datasets.
 
-Internal NIAID Artifactory
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+- Option 1: Manually Download Wheels from Github Releases
 
-Internally the `tbpcxr` package is hosted on the NIAID Python Package Index (PyPI) hosted on artifactory and is
-installable with `pip`. This enables internal dependencies to be automatically download from the artifactory. The
-internal repository can be automatically used by setting an environment variable::
+  The wheels can be downloaded from the `Github Releases`_ page and the optional dependency package `rap_sitkcore` can
+  be downloaded separately from the `Github rap_sitkcore Releases`_ page. Then the two wheels should be installed together::
 
- PIP_EXTRA_INDEX_URL=https://{USERNAME}:{PASSWORD}@artifactory.niaid.nih.gov/artifactory/api/pypi/bcbb-pypi/simple
+     python -m pip tbpcxr-0.5.1-py3-none-any.whl rap_sitkcore-0.5.5-py3-none-any.whl
 
-Then the `tbpcxr` package can be installed::
 
- python -m pip install tbpcxr[sitkcore]
+
+- Option 2: Use Internal NIAID Artifactory
+
+  It can be specified when installing with the optional dependency package notation `tbpcxr[sitkcore]`. The
+  `rap_sitkcore` package is hosted on the NIAID artifactory.
+
+  Internally the `tbpcxr` package is hosted on the NIAID Python Package Index (PyPI) hosted on artifactory and is
+  installable with `pip`. This enables internal dependencies to be automatically download from the artifactory. The
+  internal repository can be automatically used by setting an environment variable::
+
+     PIP_EXTRA_INDEX_URL
+
+  Then the `tbpcxr` package can be installed::
+
+     python -m pip install tbpcxr[sitkcore]
 
 Github Releases
 ^^^^^^^^^^^^^^^
@@ -56,7 +66,7 @@ The wheel lists the package dependencies which are required for successful insta
 packages. If the internal "artifactory" repository is not configured then these additional dependencies will need to be
 manually downloaded and installed before install `tbpcxr`. The downloaded wheels can be installed::
 
- python -m pip install tbpcxr-0.1-py3-none-any.whl
+ python -m pip install tbpcxr-0.5.1-py3-none-any.whl
 
 
 Contact
@@ -67,9 +77,11 @@ Please use the `GitHub Issues`_ for support and code issues related to the tbp-c
 Additionally, we can be emailed at: bioinformatics@niaid.nih.gov Please include "tbp-cxr-outlier" in the subject line.
 
 .. _TBPortals: https://tbportals.niaid.nih.gov/
+.. _rap_sitkcore: https://github.com/niaid/rap_sitkCore
 .. _SimpleITK toolkit: https://simpleitk.org
 .. _pip: https://pip.pypa.io/en/stable/quickstart/
 .. _Github Actions: https://github.com/niaid/tbp-cxr-outlier/actions?query=branch%3Amaster
 .. _GitHub Issues:  https://github.com/niaid/tbp-cxr-outlier
 .. _wheel: https://www.python.org/dev/peps/pep-0427/
-.. _Github Releases: https://github.com/niaid/tbp-cxr-outlier/releases
+.. _Github Releases: https://github.com/niaid/tbp-cxr-outlier/releases/latest
+.. _Github rap_sitkcore Releases: https://github.com/niaid/rap_sitkCore/releases/latest
