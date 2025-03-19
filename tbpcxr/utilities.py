@@ -29,8 +29,31 @@ except ImportError:
         return image_file_reader.Execute()
 
 
+def _auto_crop(img: sitk.Image) -> sitk.Image:
+    """
+    Automatically crop the image to the bounding box of the foreground defined by OtsuThreshold.
+
+    :param img: The input image
+    :return: The cropped image
+    """
+
+    otsu_filter = sitk.OtsuThresholdImageFilter()
+    otsu_filter.SetInsideValue(0)
+    otsu_filter.SetOutsideValue(1)
+    mask = otsu_filter.Execute(img)
+
+    stats_filter = sitk.LabelShapeStatisticsImageFilter()
+    stats_filter.Execute(mask)
+    boundingBox = stats_filter.GetBoundingBox(1)
+
+    roi = sitk.RegionOfInterestImageFilter()
+    roi.SetRegionOfInterest(boundingBox)
+
+    return roi.Execute(img)
+
+
 def normalize_img(
-    image: sitk.Image, sample_size: int = 64, smoothing_sigma_in_output_pixels: float = 0.75
+    image: sitk.Image, sample_size: int = 64, smoothing_sigma_in_output_pixels: float = 0.75, auto_crop: bool = True
 ) -> sitk.Image:
     """
     The input image is resampled with translation and scaling to fit into a unit square centered at the origin. The
@@ -41,8 +64,12 @@ def normalize_img(
     :param image: The input image
     :param sample_size: The maximum number of pixels in an axis. It will be less if input's physical size is not 1:1.
     :param smoothing_sigma_in_output_pixels: Before resample Gaussian smoothing is performed, with a sigma equivalent to
-    :return: An im
+    :param auto_crop: If True, the image is cropped to the bounding box of the foreground defined by OtsuThreshold.
+    :return: An image
     """
+
+    if auto_crop:
+        image = _auto_crop(image)
 
     dim = image.GetDimension()
     original_spacing = image.GetSpacing()
