@@ -22,6 +22,11 @@ from . import registration
 from . import utilities
 from .data import model_list
 
+import logging
+
+
+_logger = logging.getLogger(__name__)
+
 
 class Model(ABC):
     """
@@ -91,8 +96,7 @@ class Model(ABC):
         try:
             transform, metric_value = registration.cxr_affine(fixed_crop, moving=image, verbose=verbose)
         except RuntimeError as e:
-            print("Registration Error:")
-            print(e)
+            _logger.error(f"Registration Error: {e}")
             transform = sitk.TranslationTransform(2)
 
         return sitk.Resample(

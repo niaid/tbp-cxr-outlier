@@ -1,6 +1,10 @@
 import SimpleITK as sitk
 from typing import Iterable, Tuple
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 def cxr_affine(
     fixed: sitk.Image, moving: sitk.Image, verbose: int = 0, max_iterations: int = 500
@@ -18,13 +22,9 @@ def cxr_affine(
     """
 
     def command_iteration(method):
-        print(
-            "{0:3} = {1:7.5f} : {2} #{3}".format(
-                method.GetOptimizerIteration(),
-                method.GetMetricValue(),
-                method.GetOptimizerPosition(),
-                method.GetMetricNumberOfValidPoints(),
-            )
+        _logger.info(
+            f"{method.GetOptimizerIteration():3} = {method.GetMetricValue():7.5f} :  "
+            "{method.GetOptimizerPosition()} #{method.GetMetricNumberOfValidPoints()}"
         )
 
     tx = sitk.Similarity2DTransform()
@@ -72,10 +72,10 @@ def cxr_affine(
     outTx = R.Execute(fixed, moving)
 
     if verbose >= 1:
-        print(outTx)
-        print("Optimizer stop condition: {0}".format(R.GetOptimizerStopConditionDescription()))
-        print(" Iteration: {0}".format(R.GetOptimizerIteration()))
-        print(" Metric value: {0}".format(R.GetMetricValue()))
+        _logger.info(outTx)
+        _logger.info(f"Optimizer stop condition: {R.GetOptimizerStopConditionDescription()}")
+        _logger.info(f"Iteration: {R.GetOptimizerIteration()}")
+        _logger.info(f"Metric value: {R.GetMetricValue()}")
 
     return outTx, R.GetMetricValue()
 
@@ -133,10 +133,10 @@ def build_atlas(
 
     for iter in range(register_repeat):
         if verbose >= 1:
-            print("Atlas Iteration {}".format(iter))
+            _logger.info(f"Atlas Iteration {iter}")
         if verbose >= 2:
-            filename = "build_atlas_{}.nrrd".format(iter)
-            print("\tWriting {0}".format(filename))
+            filename = f"build_atlas_{iter}.nrrd"
+            _logger.info(f"\tWriting {filename}")
             sitk.WriteImage(avg, filename)
 
         fixed_crop = sitk.Crop(avg, crop_size, crop_size)
@@ -148,8 +148,7 @@ def build_atlas(
                     fixed_crop, moving=moving_img, verbose=verbose, max_iterations=max_iterations
                 )
             except RuntimeError as e:
-                print("Registration Error:")
-                print(e)
+                _logger.error(f"Registration Error: {e}")
                 transform = sitk.TranslationTransform(2)
 
             regs.append(resample(avg, moving_img, transform, verbose=verbose - 1))
