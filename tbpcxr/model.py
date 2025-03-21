@@ -202,12 +202,13 @@ class PCAModel(Model):
         self.outlier_detector = EllipticEnvelope(contamination=contamination)
         self.outlier_detector.fit(X)
 
-    def outlier_predictor(self, observation_arr: np.ndarray) -> List[int]:
+    def outlier_predictor(self, observation_arr: np.ndarray, decision=False) -> List[int]:
         """
         Use the trained PCA and outlier classifier from the :meth:`compute` to determine if an array of observation
         vectors are outliers when compared to the input data set.
 
-        :param observation_arr: An array of image observations
+        :param observation_arr: An array of image observations+
+        :param decision: Returns the results of the decision function, with 0 being the threshold for an outlier.
         :return: An array of results of outlier classification, 1 is an inlier and -1 is a classifier.
         """
 
@@ -215,6 +216,10 @@ class PCAModel(Model):
         dist = self.robust_distance(observation_arr)
 
         X = np.stack((residuals, dist), axis=-1)
+
+        if decision:
+            return self.outlier_detector.decision_function(X)
+
         return self.outlier_detector.predict(X)
 
     def residual_images(self, observation_arr: np.ndarray) -> List[sitk.Image]:
