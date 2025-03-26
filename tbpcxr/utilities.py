@@ -1,5 +1,8 @@
 import SimpleITK as sitk
 import numpy as np
+import logging
+
+_logger = logging.getLogger(__name__)
 
 try:
     from rap_sitkcore import read_dcm
@@ -29,7 +32,7 @@ except ImportError:
         return image_file_reader.Execute()
 
 
-def _auto_crop(img: sitk.Image) -> sitk.Image:
+def _auto_crop(img: sitk.Image, *, max_ratio=2.0) -> sitk.Image:
     """
     Automatically crop the image to the bounding box of the foreground defined by OtsuThreshold.
 
@@ -44,7 +47,20 @@ def _auto_crop(img: sitk.Image) -> sitk.Image:
 
     stats_filter = sitk.LabelShapeStatisticsImageFilter()
     stats_filter.Execute(mask)
+
+    if stats_filter.GetNumberOfLabels() < 1:
+        _logger.debug("No foreground found, not cropping")
+        return img
+
     boundingBox = stats_filter.GetBoundingBox(1)
+
+    bb_width = boundingBox[2]
+    bb_height = boundingBox[3]
+
+    if bb_width > bb_height and float(bb_width) / bb_height > max_ratio:
+        return img
+    if bb_height > bb_width and float(bb_height) / bb_width > max_ratio:
+        return img
 
     roi = sitk.RegionOfInterestImageFilter()
     roi.SetRegionOfInterest(boundingBox)
@@ -94,7 +110,19 @@ def normalize_img(
     image = sitk.SmoothingRecursiveGaussian(
         image, [smoothing_sigma_in_output_pixels * max_physical_size / sample_size] * dim
     )
-    image = sitk.Normalize(image)
+
+    stats = sitk.StatisticsImageFilter()
+    stats.Execute(image)
+
+    if stats.GetSigma() == 0:
+        _logger.warning("Image has zero sigma, not normalizing")
+    else:
+        shift_scale = sitk.ShiftScaleImageFilter()
+        shift_scale.SetShift(-stats.GetMean())
+        shift_scale.SetScale(1.0 / stats.GetSigma())
+        shift_scale.SetOutputPixelType(sitk.sitkFloat32)
+        image = shift_scale.Execute(image)
+
     image = sitk.Resample(
         image,
         transform=tx,
@@ -103,6 +131,7 @@ def normalize_img(
         outputOrigin=output_origin,
         outputDirection=np.identity(dim).ravel().tolist(),
         useNearestNeighborExtrapolator=False,
+        outputPixelType=sitk.sitkFloat64,
     )
 
     # center the image at the zero-origin
