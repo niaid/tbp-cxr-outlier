@@ -60,3 +60,18 @@ def test_A(filename, outlier_class, outlier_pcamodel):
     arr = outlier_pcamodel.to_observations([img])
 
     assert outlier_pcamodel.outlier_predictor(arr)[0] == outlier_class
+
+
+def test_to_observations_constant(outlier_pcamodel):
+    """
+    Test the to_observations method with a constant image.
+    """
+    img = sitk.Image(224, 224, sitk.sitkFloat32)
+
+    img += 1.2
+
+    arr = outlier_pcamodel.to_observations([img])
+
+    expected_size = (outlier_pcamodel.reference_size - 2 * outlier_pcamodel.reference_crop) ** 2
+
+    assert arr.shape == (1, expected_size)
