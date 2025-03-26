@@ -24,7 +24,7 @@ def cxr_affine(
     def command_iteration(method):
         _logger.info(
             f"{method.GetOptimizerIteration():3} = {method.GetMetricValue():7.5f} :  "
-            "{method.GetOptimizerPosition()} #{method.GetMetricNumberOfValidPoints()}"
+            f"{method.GetOptimizerPosition()} #{method.GetMetricNumberOfValidPoints()}"
         )
 
     tx = sitk.Similarity2DTransform()
