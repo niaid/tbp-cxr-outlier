@@ -10,7 +10,7 @@ The following steps are used in the algorithm to detect outliers:
 
  - Normalize the image into a standard size and intensity range.
  - Register the image to a CXR atlas.
- - Transform the image into an approximations with a precomputed principle component basis.
+ - Transform the image into an approximations with a precomputed principal component basis.
  - Predict if the image is an outlier determined by how well the image fits to the model.
 
 
